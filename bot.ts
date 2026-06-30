@@ -23,6 +23,10 @@ client.on(Events.MessageCreate, async (message) => {
 
   if (common.length > 0) {
     for (const { submatch, commonRadical } of common) {
+      if (['昨日', '明日', '思想'].includes(submatch)) {
+        continue;
+      }
+
       await message.reply(`ナイス共通部首！ ${submatch}（${commonRadical}）`);
     }
   }

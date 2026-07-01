@@ -20,15 +20,15 @@ client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
   const common = Array.from(listCommonRadicals(message.content));
+  const filtered = common.filter(({ submatch }) => !['昨日', '明日', '日時', '思想'].includes(submatch));
 
-  if (common.length > 0) {
-    for (const { submatch, commonRadical } of common) {
-      if (['昨日', '明日', '思想'].includes(submatch)) {
-        continue;
-      }
+  if (filtered.length > 0) {
+    const text = filtered
+      .map(({ submatch, commonRadical }) => `${submatch}（${commonRadical}部）`)
+      .join('、');
 
-      await message.reply(`ナイス共通部首！ ${submatch}（${commonRadical}）`);
-    }
+    await message.reply(`ナイス共通部首！ ${text}`);
+
   }
 });
 

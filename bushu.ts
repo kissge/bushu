@@ -27,15 +27,24 @@ function checkCommonRadical(text: string) {
 }
 
 function iterateAllSubmatch(text: string) {
+  const results = [];
+
   for (let len = text.length; len > 1; --len) {
     for (let start = 0; start + len <= text.length; ++start) {
       const submatch = text.substring(start, start + len);
+      if (!/^[\p{Script=Han}]+$/u.test(submatch)) {
+        continue;
+      }
+
       const commonRadical = checkCommonRadical(submatch);
       if (commonRadical) {
-        return { submatch, commonRadical };
+        results.push({ submatch, commonRadical });
+        text = text.replaceAll(submatch, ' '.repeat(len));
       }
     }
   }
+
+  return results.length > 0 ? results : null;
 }
 
 export function* listCommonRadicals(text: string) {
@@ -43,7 +52,7 @@ export function* listCommonRadicals(text: string) {
   for (const match of kanji) {
     const common = iterateAllSubmatch(match[0]);
     if (common) {
-      yield common;
+      yield* common;
     }
   }
 }

@@ -20,15 +20,22 @@ client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
   const common = Array.from(listCommonRadicals(message.content));
-  const filtered = common.filter(({ submatch }) => !['昨日', '明日', '日時', '思想'].includes(submatch));
 
-  if (filtered.length > 0) {
-    const text = filtered
-      .map(({ submatch, commonRadical }) => `${submatch}（${commonRadical}部）`)
-      .join('、');
+  if (common.length > 0) {
+    const reactionEmoji = message.guild?.emojis.cache.find((emoji) => emoji.name === 'kyoutsuu_bushu');
+    message.react(reactionEmoji || '👍').catch(console.error);
+  }
 
-    await message.reply(`ナイス共通部首！ ${text}`);
+  if ('name' in message.channel && message.channel.name === '雑談') {
+    const filtered = common.filter(({ submatch }) => !['昨日', '明日', '日時', '思想'].includes(submatch));
 
+    if (filtered.length > 0) {
+      const text = filtered
+        .map(({ submatch, commonRadical }) => `${submatch}（${commonRadical}部）`)
+        .join('、');
+
+      await message.reply(`ナイス共通部首！ ${text}`);
+    }
   }
 });
 
